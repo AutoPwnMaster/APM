@@ -23,3 +23,4 @@ class Auto_Attack:
             print("Connection success !!!")
         except:
             print("Connection error")
+            # haha
