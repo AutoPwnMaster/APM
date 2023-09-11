@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 set -e # 如果有錯誤則離開
 if netstat -tuln | grep -q ":55553\b"; then # 如果伺服器已經開啟
