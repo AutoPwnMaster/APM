@@ -9,7 +9,7 @@ from lib import *
 
 FONT = ("JetBrains Mono", 13)
 output_queue = queue.Queue()
-
+input_queue = queue.Queue()
 
 class Attack:
     __rpc: MsfRpcClient
@@ -84,6 +84,7 @@ def gui_thread():
         try:
             attack_output = output_queue.get_nowait()
             window['-OUTPUT-'].update(attack_output, append=True)
+            input_queue.put(attack_output)
         except queue.Empty:
             pass
 
