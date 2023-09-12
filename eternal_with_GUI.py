@@ -11,6 +11,7 @@ FONT = ("JetBrains Mono", 13)
 output_queue = queue.Queue()
 input_queue = queue.Queue()
 
+
 class Attack:
     __rpc: MsfRpcClient
     __rhost: str
