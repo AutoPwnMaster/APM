@@ -51,6 +51,7 @@ def attack_thread():
 
 
 def gui_thread():
+    sg.theme("DarkBlue3")
     # 定義視窗佈局
     layout = [
         [sg.Multiline(size=(80, 18), font=FONT, disabled=True, key='-OUTPUT-', autoscroll=True, expand_x=True,
@@ -60,7 +61,8 @@ def gui_thread():
     ]
 
     # 創建窗口
-    window = sg.Window('Python GUI', layout, return_keyboard_events=True, resizable=True)
+    window = sg.Window('Python GUI', layout, return_keyboard_events=True, resizable=True, finalize=True)
+    window['-INPUT-'].bind("<Return>", "_Enter")
 
     while True:
         event, values = window.read(timeout=100)
@@ -69,7 +71,7 @@ def gui_thread():
         if event == sg.WINDOW_CLOSED:
             break
 
-        if event == '\r' or event == 'Return:603979789':  # 如果使用者按下 Enter 鍵
+        if event == "-INPUT-" + "_Enter":  # 如果使用者按下 Enter 鍵
             # 獲取輸入框的內容並更新輸出框
             user_input = values['-INPUT-'].strip()
             if user_input == '':
