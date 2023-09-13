@@ -12,13 +12,13 @@ class Attack:
     __payload: Payloads
     __module: ExploitModule | PostModule | EncoderModule | AuxiliaryModule | NopModule | PayloadModule
 
-    def __init__(self, rpc, rhost, module=None, payload=None):
+    def __init__(self, rpc, rhost, module, payload):
         """
         初始化建構子
 
         :param rpc:     執行客戶端
         :type rpc:      (MsfRpcClient)
-        :param rhost:   目標主機
+        :param rhost:   目標主機IP
         :type rhost:    (str)
         :param module:  攻擊模型
         :type module:   (Modules)
