@@ -1,7 +1,8 @@
 from pymetasploit3.msfrpc import MsfRpcClient, ExploitModule, PostModule, EncoderModule, AuxiliaryModule, NopModule, \
     PayloadModule
 
-from lib import *
+from libs.Modules import Modules
+from libs.Payloads import *
 
 
 class Attack:
@@ -39,7 +40,6 @@ class Attack:
             .console(self.__rpc.consoles.console().cid)
             .run_module_with_output(self.__module, PayloadModule(self.__rpc, self.__payload.value))
         )
-
 
 
 if __name__ == '__main__':
