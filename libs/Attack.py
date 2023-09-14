@@ -16,14 +16,14 @@ class Attack:
         """
         初始化建構子
 
-        :param rpc:     執行客戶端
-        :type rpc:      (MsfRpcClient)
-        :param rhost:   目標主機IP
-        :type rhost:    (str)
-        :param module:  攻擊模型
-        :type module:   (Modules)
-        :param payload: 執行負載
-        :type payload:  (Payloads)
+        :param rpc:      執行客戶端
+        :type  rpc:      (MsfRpcClient)
+        :param rhost:    目標主機IP
+        :type  rhost:    (str)
+        :param module:   攻擊模型
+        :type  module:   (Modules)
+        :param payload:  執行負載
+        :type  payload:  (Payloads)
         """
 
         self.__rpc = rpc
@@ -35,8 +35,8 @@ class Attack:
         """
         設定攻擊模型
 
-        :param module:
-        :type module: Modules
+        :param module: 模型路徑
+        :type  module: Modules
         """
 
         self.__module_path = module
@@ -46,7 +46,7 @@ class Attack:
         設定執行負載
 
         :param payload: 執行負載
-        :type payload: Payloads
+        :type  payload: (Payloads)
         """
 
         self.__payload = payload
@@ -55,8 +55,8 @@ class Attack:
         """
         開始攻擊
 
-        :return:
-        :rtype: (str)
+        :return: 訊息內容
+        :rtype:  (str)
         """
 
         # 取得模型類型與名稱

@@ -1,7 +1,10 @@
 import queue
+import sys
 
 import PySimpleGUI as sg
 from PySimpleGUI import Element, Window
+
+from libs.Logger import Logger
 
 _default_layout = [
     [sg.Multiline(size=(80, 18), disabled=True, key='-OUTPUT-', autoscroll=True, expand_x=True,
@@ -12,6 +15,7 @@ _default_layout = [
 
 
 class GUI_Template:
+    __logger = Logger('GUI')  # 記錄器
     __output_queue = queue.Queue()  # 輸出暫存器
     __window: Window  # 主視窗
     __layout: list[list[Element]]  # 介面排版
@@ -59,7 +63,15 @@ class GUI_Template:
         :type text: (str)
         """
         self.__output_queue.put(text)
-        ...
+
+    def println(self, text):
+        """
+        向輸出暫存器添加文字，並在句尾加上換行
+
+        :param text: 文字內容
+        :type text: (str)
+        """
+        self.print(text + '\n')
 
     def build(self):
         """
@@ -67,10 +79,23 @@ class GUI_Template:
         """
 
         sg.theme(self.__theme)
-        self.__window = sg.Window(self.__title, self.__layout, font=self.__font,
-                                  return_keyboard_events=True, resizable=True, finalize=True)
-        self.__window['-INPUT-'].bind('<Return>', '_Enter')
-        self.__window.TKroot.bind_all('<Key>', self.global_key_event, '+')
+        try:
+            self.__logger.info('正在初始化介面...')
+            self.__window = sg.Window(self.__title, self.__layout, font=self.__font,
+                                      return_keyboard_events=True, resizable=True, finalize=True)
+            self.__logger.succ('介面初始化完成')
+        except:
+            self.__logger.err('介面初始化失敗')
+            sys.exit(1)
+
+        try:
+            self.__logger.info('正在綁定事件監聽器...')
+            self.__window['-INPUT-'].bind('<Return>', '_Enter')
+            self.__window.TKroot.bind_all('<Key>', self.global_key_event, '+')
+            self.__logger.succ('事件監聽器綁定完成')
+        except:
+            self.__logger.err('事件監聽器綁定失敗')
+            sys.exit(1)
 
         while True:
             # 事件名稱, 介面資料
@@ -78,6 +103,7 @@ class GUI_Template:
 
             # 若視窗被關閉
             if event == sg.WINDOW_CLOSED:
+                self.__logger.info('正在關閉...')
                 break  # 跳出迴圈
 
             # 如果使用者按下 Enter 鍵
@@ -89,9 +115,6 @@ class GUI_Template:
                 # 若訊息為空, 則不理會事件
                 if user_input == '':
                     continue
-
-                # 新增訊息至輸出介面
-                self.__window['-OUTPUT-'].update(user_input + '\n', append=True)
 
                 # 呼叫輸入事件
                 self.input_event(user_input)
