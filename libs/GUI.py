@@ -4,6 +4,7 @@ import sys
 import PySimpleGUI as sg
 from PySimpleGUI import Element, Window
 
+from libs.EventListener import EventListener
 from libs.Logger import Logger
 
 _default_layout = [
@@ -14,7 +15,7 @@ _default_layout = [
 ]
 
 
-class GUI_Template:
+class GUI(EventListener):
     __logger = Logger('GUI')  # 記錄器
     __output_queue = queue.Queue()  # 輸出暫存器
     __window: Window  # 主視窗
@@ -73,21 +74,7 @@ class GUI_Template:
         """
         self.print(text + '\n')
 
-    def __enter_event(self, values):
-        # 將開頭與結尾的空格移除
-        user_input = values['-INPUT-'].strip()
-
-        # 若訊息為空, 則不理會事件
-        if user_input == '':
-            return
-
-        # 呼叫輸入事件
-        self.input_event(user_input)
-
-        # 清空輸入框
-        self.__window['-INPUT-'].update('')
-
-    def build(self):
+    async def build(self):
         """
         建構 GUI
         """
@@ -105,7 +92,6 @@ class GUI_Template:
         try:
             self.__logger.info('正在綁定事件監聽器...')
             self.__window['-INPUT-'].bind('<Return>', '_Enter')
-            self.__window.TKroot.bind_all('<Key>', self.global_key_event, '+')
             self.__logger.succ('事件監聽器綁定完成')
         except:
             self.__logger.err('事件監聽器綁定失敗')
@@ -122,7 +108,7 @@ class GUI_Template:
 
             # 如果使用者按下 Enter 鍵
             if event == '-INPUT-' + '_Enter':
-                self.__enter_event(values)
+                await self.__enter_event(values)
 
             # 嘗試取得並輸出暫存器內容
             try:
@@ -134,21 +120,19 @@ class GUI_Template:
 
         self.__window.close()
 
-    # --------------------- #
-    #     可繼承事件監聽器     #
-    # --------------------- #
-    def input_event(self, text):
-        """
-        可繼承方法
+    ##################
+    #  Private Func  #
+    ##################
+    async def __enter_event(self, values):
+        # 將開頭與結尾的空格移除
+        user_input = values['-INPUT-'].strip()
 
-        :param text: 文字內容 (不包含換行)
-        :type text: (str)
-        """
+        # 若訊息為空, 則不理會事件
+        if user_input == '':
+            return
 
-    def global_key_event(self, event):
-        """
-        可繼承方法
+        # 呼叫輸入事件，可使用裝飾器接收
+        await self.trigger('on_input_line', self, user_input)
 
-        :param event: 事件資訊
-        # :type event: (dict)
-        """
+        # 清空輸入框
+        self.__window['-INPUT-'].update('')

