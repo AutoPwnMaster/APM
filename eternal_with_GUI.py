@@ -29,7 +29,7 @@ class GUI(GUI_Template):
             return
 
         self.print(text)
-        shell = client.sessions.session(client.sessions.list.keys()[0])
+        shell = client.sessions.session(list(client.sessions.list.keys())[0])
         self.print(shell.run_with_output(text))
 
     def global_key_event(self, event):
