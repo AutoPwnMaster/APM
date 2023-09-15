@@ -48,8 +48,7 @@ class Attack:
         mtype = self.__module_path.value[:first_slash_index]
         mname = self.__module_path.value[first_slash_index + 1:]
         self.__module = self.__rpc.modules.use(mtype, mname)
-        self.__module.target = 0  # set DLL
-        # self.__module.targets => {0: 'DLL', 1: 'PSH'}
+        self.__module.target = 0  # {0: 'DLL', 1: 'PSH'}
         self.__module["SRVHOST"] = self.__ipv4
         cid = self.__rpc.consoles.console().cid
         console = self.__rpc.consoles.console(cid)
