@@ -73,6 +73,20 @@ class GUI_Template:
         """
         self.print(text + '\n')
 
+    def __enter_event(self, values):
+        # 將開頭與結尾的空格移除
+        user_input = values['-INPUT-'].strip()
+
+        # 若訊息為空, 則不理會事件
+        if user_input == '':
+            return
+
+        # 呼叫輸入事件
+        self.input_event(user_input)
+
+        # 清空輸入框
+        self.__window['-INPUT-'].update('')
+
     def build(self):
         """
         建構 GUI
@@ -108,19 +122,7 @@ class GUI_Template:
 
             # 如果使用者按下 Enter 鍵
             if event == '-INPUT-' + '_Enter':
-
-                # 將開頭與結尾的空格移除
-                user_input = values['-INPUT-'].strip()
-
-                # 若訊息為空, 則不理會事件
-                if user_input == '':
-                    continue
-
-                # 呼叫輸入事件
-                self.input_event(user_input)
-
-                # 清空輸入框
-                self.__window['-INPUT-'].update('')
+                self.__enter_event(values)
 
             # 嘗試取得並輸出暫存器內容
             try:
@@ -148,5 +150,5 @@ class GUI_Template:
         可繼承方法
 
         :param event: 事件資訊
-        :type event: (dict)
+        # :type event: (dict)
         """

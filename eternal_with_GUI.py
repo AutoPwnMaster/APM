@@ -1,6 +1,7 @@
 import sys
 import threading
 
+import pymetasploit3.msfrpc
 from pymetasploit3.msfrpc import MsfRpcClient
 
 from libs.Attack import Attack
@@ -17,9 +18,6 @@ class GUI(GUI_Template):
     """
     繼承模板
     """
-
-    def __init__(self, title):
-        super().__init__(title)
 
     def input_event(self, text):
         if not client:
@@ -53,9 +51,8 @@ def attack_thread(gui):
         global client
         client = MsfRpcClient("salt", port=55553, ssl=True)
         logger.succ('成功連線到 RPC')
-    except:
-
-        logger.err('無法連線到 RPC')
+    except pymetasploit3.msfrpc.MsfAuthError:
+        logger.err('驗證失敗，無法連線到 RPC')
         sys.exit(1)
 
     # 建立攻擊
