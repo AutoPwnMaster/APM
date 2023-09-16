@@ -162,7 +162,7 @@ class GUI(EventListener):
 
         # 更新輸入框
         self.__window['-INPUT-'].update(
-            self.__command_history[len(self.__command_history) - self.__current_pos]
+            self.__command_history[-self.__current_pos]
         )
 
     async def __down_event(self):
@@ -176,6 +176,6 @@ class GUI(EventListener):
             self.__window['-INPUT-'].update(self.__latest_content)
         else:
             self.__window['-INPUT-'].update(
-                self.__command_history[len(self.__command_history) - self.__current_pos + 1]
+                self.__command_history[-self.__current_pos + 1]
             )
             self.__current_pos -= 1
