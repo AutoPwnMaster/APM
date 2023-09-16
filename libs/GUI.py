@@ -19,10 +19,13 @@ class GUI(EventListener):
     __logger = Logger('GUI')  # 記錄器
     __output_queue = queue.Queue()  # 輸出暫存器
     __window: Window  # 主視窗
-    __layout: list[list[Element]]  # 介面排版
+    __layout: [[Element]]  # 介面排版
     __title: str  # 應用程式標題
     __font: tuple[str, int]  # 字體
     __theme: str  # 主題
+    __command_history: [str] = []  # 指令輸入紀錄
+    __current_pos: int = 0  # 目前指令輸入紀錄位置 (0)
+    __latest_content: str
 
     def __init__(self, title,
                  font=('JetBrains Mono', 13),
@@ -92,11 +95,14 @@ class GUI(EventListener):
         try:
             self.__logger.info('正在綁定事件監聽器...')
             self.__window['-INPUT-'].bind('<Return>', '_Enter')
+            self.__window['-INPUT-'].bind('<Up>', '_Up')
+            self.__window['-INPUT-'].bind('<Down>', '_Down')
             self.__logger.succ('事件監聽器綁定完成')
         except:
             self.__logger.err('事件監聽器綁定失敗')
             sys.exit(1)
 
+        # 主迴圈
         while True:
             # 事件名稱, 介面資料
             event, values = self.__window.read(timeout=100)
@@ -106,9 +112,15 @@ class GUI(EventListener):
                 self.__logger.info('正在關閉...')
                 break  # 跳出迴圈
 
-            # 如果使用者按下 Enter 鍵
-            if event == '-INPUT-' + '_Enter':
-                await self.__enter_event(values)
+            match event:
+                case '-INPUT-_Enter':
+                    await self.__enter_event(values['-INPUT-'].strip())
+
+                case '-INPUT-_Up':
+                    await self.__up_event(values['-INPUT-'].strip())
+
+                case '-INPUT-_Down':
+                    await self.__down_event()
 
             # 嘗試取得並輸出暫存器內容
             try:
@@ -123,16 +135,47 @@ class GUI(EventListener):
     ##################
     #  Private Func  #
     ##################
-    async def __enter_event(self, values):
-        # 將開頭與結尾的空格移除
-        user_input = values['-INPUT-'].strip()
-
+    async def __enter_event(self, input):
         # 若訊息為空, 則不理會事件
-        if user_input == '':
+        if input == '':
             return
 
+        # 記錄指令
+        self.__command_history.append(input)
+        self.__current_pos = 0
+
         # 呼叫輸入事件，可使用裝飾器接收
-        await self.trigger('on_input_line', self, user_input)
+        await self.trigger('on_input_line', self, input)
 
         # 清空輸入框
         self.__window['-INPUT-'].update('')
+
+    async def __up_event(self, text):
+        # 無更多紀錄
+        if self.__current_pos == len(self.__command_history):
+            return
+
+        if self.__current_pos == 0:
+            self.__latest_content = text
+
+        self.__current_pos += 1
+
+        # 更新輸入框
+        self.__window['-INPUT-'].update(
+            self.__command_history[len(self.__command_history) - self.__current_pos]
+        )
+
+    async def __down_event(self):
+        # 已經是最新了
+        if self.__current_pos == 0:
+            return
+
+        # 更新輸入框
+        if self.__current_pos == 1:
+            self.__current_pos = 0
+            self.__window['-INPUT-'].update(self.__latest_content)
+        else:
+            self.__window['-INPUT-'].update(
+                self.__command_history[len(self.__command_history) - self.__current_pos + 1]
+            )
+            self.__current_pos -= 1
