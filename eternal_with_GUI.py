@@ -15,7 +15,7 @@ from libs.Payloads import Payloads
 client: MsfRpcClient
 logger = Logger('Main')
 gui = GUI('My Console')
-stop_funcs: list[Callable]
+stop_funcs: list[Callable] = []
 
 
 @gui.event
