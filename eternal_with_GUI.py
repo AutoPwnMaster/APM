@@ -1,6 +1,7 @@
 import asyncio
 import sys
 import threading
+from typing import Callable
 
 import pymetasploit3.msfrpc
 from pymetasploit3.msfrpc import MsfRpcClient
@@ -14,6 +15,7 @@ from libs.Payloads import Payloads
 client: MsfRpcClient
 logger = Logger('Main')
 gui = GUI('My Console')
+stop_funcs: list[Callable]
 
 
 @gui.event
@@ -62,6 +64,8 @@ def attack_thread():
     except AttackError:
         sys.exit(1)
 
+    stop_funcs.append(atk.stop)
+
     @atk.event
     async def on_read(text):
         gui.println(text)
@@ -82,8 +86,8 @@ async def main():
     # 等待攻擊線程完成
     logger.info('正在關閉...')
 
-    for i in list(client.sessions.list.keys()):
-        client.sessions.session(i).stop()
+    for func in stop_funcs:
+        func()
 
     t1.join(timeout=60)
     logger.succ('關閉完成')

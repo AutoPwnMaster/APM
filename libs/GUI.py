@@ -19,11 +19,11 @@ class GUI(EventListener):
     __logger = Logger('GUI')  # 記錄器
     __output_queue = queue.Queue()  # 輸出暫存器
     __window: Window  # 主視窗
-    __layout: [[Element]]  # 介面排版
+    __layout: list[list[Element]]  # 介面排版
     __title: str  # 應用程式標題
     __font: tuple[str, int]  # 字體
     __theme: str  # 主題
-    __command_history: [str] = []  # 指令輸入紀錄
+    __command_history: list[str] = []  # 指令輸入紀錄
     __current_pos: int = 0  # 目前指令輸入紀錄位置 (0)
     __latest_content: str
 
