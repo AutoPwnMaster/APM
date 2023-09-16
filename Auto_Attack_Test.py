@@ -58,6 +58,7 @@ class Attack:
         )
         print(console.read())
         # Maybe show in GUI
+    
 
 
 if __name__ == '__main__':
