@@ -1,8 +1,12 @@
 from pymetasploit3.msfrpc import MsfRpcClient
+from libs.modules.Module_List import Modules
+
+
+
 
 if __name__ == '__main__':
     client = MsfRpcClient("salt", port=55553, ssl=True)
-    module = client.modules.use('exploit', 'windows/smb/smb_delivery')
+    module = client.modules.use('exploit', Modules.MS10_061_SPOOLSS)
 
     options: list[str] = module.options
     options.sort()
