@@ -21,8 +21,7 @@ class Logger:
         """
         輸出日誌
 
-        :param  prefix:      前綴
-        :type   prefix:      (str)
+        :param (str) prefix: 前綴
         """
 
         self.__prefix = prefix
@@ -32,8 +31,7 @@ class Logger:
         """
         向終端輸出「記錄」訊息
 
-        :param   message: 文字
-        :type    message: (str)
+        :param (str) message: 文字
         """
 
         print(f'{Style.GREY}{self.time()}{Style.RESET} '
@@ -46,8 +44,7 @@ class Logger:
         """
         向終端輸出「成功」訊息
 
-        :param   message: 文字
-        :type    message: (str)
+        :param (str) message: 文字
         """
 
         print(f'{Style.GREY}{self.time()} '
@@ -60,8 +57,7 @@ class Logger:
         """
         向終端輸出「警告」訊息
 
-        :param   message: 文字
-        :type    message: (str)
+        :param (str) message: 文字
         """
 
         print(f'{Style.GREY}{self.time()} '
@@ -74,8 +70,7 @@ class Logger:
         """
         向終端輸出「錯誤」訊息
 
-        :param   message: 文字
-        :type    message: (str)
+        :param (str) message: 文字
         """
 
         print(f'{Style.GREY}{self.time()} '

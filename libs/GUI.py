@@ -34,14 +34,10 @@ class GUI(EventListener):
         """
         初始化建構子
 
-        :param title: 應用程式標題
-        :type title: (str)
-        :param layout: 介面排版
-        :type layout: (list[list[Element]])
-        :param font: 字體
-        :type font: (tuple[str, int])
-        :param theme: 主題
-        :type theme: (str)
+        :param (str)                 title:  應用程式標題
+        :param (list[list[Element]]) layout: 介面排版
+        :param (tuple[str, int])     font:   字體
+        :param (str)                 theme:  主題
         """
 
         self.__layout = _default_layout if layout is None else layout
@@ -53,8 +49,7 @@ class GUI(EventListener):
         """
         設定介面排版
 
-        :param layout:
-        :type layout: (list[list[Element]])
+        :param (list[list[Element]]) layout: 介面
         """
 
         self.__layout = layout
@@ -63,18 +58,18 @@ class GUI(EventListener):
         """
         向輸出暫存器添加文字
 
-        :param text: 文字內容
-        :type text: (str)
+        :param (str) text: 文字內容
         """
+
         self.__output_queue.put(text)
 
     def println(self, text):
         """
         向輸出暫存器添加文字，並在句尾加上換行
 
-        :param text: 文字內容
-        :type text: (str)
+        :param (str) text: 文字內容
         """
+
         self.print(text + '\n')
 
     async def build(self):
@@ -117,10 +112,10 @@ class GUI(EventListener):
                     await self.__enter_event(values['-INPUT-'].strip())
 
                 case '-INPUT-_Up':
-                    await self.__up_event(values['-INPUT-'].strip())
+                    self.__up_event(values['-INPUT-'].strip())
 
                 case '-INPUT-_Down':
-                    await self.__down_event()
+                    self.__down_event()
 
             # 嘗試取得並輸出暫存器內容
             try:
@@ -150,7 +145,7 @@ class GUI(EventListener):
         # 清空輸入框
         self.__window['-INPUT-'].update('')
 
-    async def __up_event(self, text):
+    def __up_event(self, text):
         # 無更多紀錄
         if self.__current_pos == len(self.__command_history):
             return
@@ -165,7 +160,7 @@ class GUI(EventListener):
             self.__command_history[-self.__current_pos]
         )
 
-    async def __down_event(self):
+    def __down_event(self):
         # 已經是最新了
         if self.__current_pos == 0:
             return

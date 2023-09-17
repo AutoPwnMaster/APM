@@ -54,10 +54,9 @@ class EventListener:
         裝飾器。將會根據事件與函數名稱異步觸發。
         可以重複定義多個函數，無法保證執行先後順序。
 
-        :param   func: 觸發函數
-        :type    func: (function)
-        :return:       觸發函數
-        :rtype:        (function)
+        :param   (function) func: 觸發函數
+        :return:                  觸發函數
+        :rtype:  (function)
         """
 
         self.__events \
@@ -70,10 +69,9 @@ class EventListener:
         """
         觸發事件監聽器。
 
-        :param event_name: 事件名稱。通常是裝飾器函數名稱
-        :type  event_name: (str)
-        :param args:   元組參數。接收任意數量的位置引數
-        :param kwargs: 字典參數。接收任意數量的關鍵字引數
+        :param (str) event_name: 事件名稱。通常是裝飾器函數名稱
+        :param       args:       元組參數。接收任意數量的位置引數
+        :param       kwargs:     字典參數。接收任意數量的關鍵字引數
         """
 
         if event_name in self.__events:

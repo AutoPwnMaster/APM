@@ -1,7 +1,7 @@
+from libs.Modules import Modules
 from pymetasploit3.msfrpc import MsfRpcClient, ExploitModule, PostModule, EncoderModule, AuxiliaryModule, NopModule, \
     PayloadModule
 
-from libs.Modules import Modules
 from libs.Payloads import *
 from libs.Tools import get_ipv4
 
@@ -58,7 +58,6 @@ class Attack:
         )
         print(console.read())
         # Maybe show in GUI
-    
 
 
 if __name__ == '__main__':

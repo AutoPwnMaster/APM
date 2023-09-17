@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-class Payloads(str, Enum):
+class Payloads(str):
     BIND_TCP_RC4 = 'windows/x64/meterpreter/bind_tcp_rc4'
     BIND_TCP_UUID = 'windows/x64/meterpreter/bind_tcp_uuid'
     REVERSE_TCP_RC4 = 'windows/x64/meterpreter/reverse_tcp_rc4'
