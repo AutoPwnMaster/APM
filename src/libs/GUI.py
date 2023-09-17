@@ -4,8 +4,8 @@ import sys
 import PySimpleGUI as sg
 from PySimpleGUI import Element, Window
 
-from libs.EventListener import EventListener
-from libs.Logger import Logger
+from src.libs.EventListener import EventListener
+from src.libs.Logger import Logger
 
 _default_layout = [
     [sg.Multiline(size=(80, 18), disabled=True, key='-OUTPUT-', autoscroll=True, expand_x=True,

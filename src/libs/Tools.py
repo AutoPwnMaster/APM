@@ -1,6 +1,7 @@
-from socket import socket, AF_INET, SOCK_DGRAM
 import re  # re libary
+from socket import socket, AF_INET, SOCK_DGRAM
 from subprocess import check_output  # 呼叫 Bash 庫
+
 
 def get_ipv4():
     sock = socket(AF_INET, SOCK_DGRAM)

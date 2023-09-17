@@ -4,8 +4,8 @@ import time
 
 from pymetasploit3.msfrpc import PayloadModule, ExploitModule, MsfRpcClient, MeterpreterSession
 
-from libs.EventListener import EventListener
-from libs.Logger import Logger
+from src.libs.EventListener import EventListener
+from src.libs.Logger import Logger
 
 
 class Basic(EventListener):

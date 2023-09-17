@@ -6,10 +6,10 @@ from typing import Callable
 import pymetasploit3.msfrpc
 from pymetasploit3.msfrpc import MsfRpcClient, MeterpreterSession
 
-from libs.GUI import GUI
-from libs.Logger import Logger
-from libs.modules.Eternalblue import Eternalblue
-from libs.modules.list.Payload_List import REVERSE_TCP
+from src.libs.GUI import GUI
+from src.libs.Logger import Logger
+from src.libs.modules.Eternalblue import Eternalblue
+from src.libs.modules.list.Payload_List import REVERSE_TCP
 
 client: MsfRpcClient = None
 logger = Logger('Main')

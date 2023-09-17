@@ -2,8 +2,8 @@ import re
 
 from pymetasploit3.msfrpc import MsfRpcClient
 
-from libs.modules.Basic import Basic
-from libs.modules.list.Payload_List import REVERSE_TCP
+from src.libs.modules.Basic import Basic
+from src.libs.modules.list.Payload_List import REVERSE_TCP
 
 
 class Eternalblue(Basic):

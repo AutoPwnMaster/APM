@@ -1,13 +1,16 @@
-from libs.modules.list.Exploit_List import Exploit
-# import Modules
-from pymetasploit3.msfrpc import MsfRpcClient, ExploitModule, PostModule, EncoderModule, AuxiliaryModule, NopModule, \
-    PayloadModule, MsfConsole
-# 
-from libs.modules.list.Payload_List import Payload, REVERSE_TCP
-from libs.Tools import get_ipv4
-from libs.Tools import Get_Printer
 from time import sleep
-# 
+
+# import Modules
+from pymetasploit3.msfrpc import MsfRpcClient, ExploitModule, PayloadModule, MsfConsole
+
+from src.libs.Tools import Get_Printer
+from src.libs.Tools import get_ipv4
+from src.libs.modules.list.Exploit_List import Exploit
+#
+from src.libs.modules.list.Payload_List import Payload
+
+
+#
 class Attack:
     __rpc: MsfRpcClient
     __rhost: str
@@ -15,7 +18,8 @@ class Attack:
     __payload: Payload
     __module: ExploitModule
     __console: MsfConsole
-# 
+
+    #
     def __init__(self,
                  rpc: MsfRpcClient,
                  rhost: str = None,
