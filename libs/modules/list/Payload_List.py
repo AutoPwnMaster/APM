@@ -3,7 +3,7 @@ class Payload:
     options: list[str]
 
 
-class REVERSE_TCP(Payload):
+class REVERSE_TCP_64(Payload):
     name = 'windows/x64/meterpreter/reverse_tcp'
     options = ['LHOST', 'LPORT', 'ReverseAllowProxy', 'ReverseListenerThreaded', 'PingbackRetries',
                'PingbackSleep', 'PayloadUUIDTracking', 'PrependMigrate', 'EXITFUNC',
