@@ -53,7 +53,7 @@ class Eternalblue(Basic):
         :param ReverseListenerThreaded:
         """
 
-        super().__init__(rpc, 'windows/smb/ms17_010_eternalblue', payload.name)
+        super().__init__(rpc, 'windows/smb/ms17_010_eternalblue', payload.name_64)
 
         for i in self.__module_options:
             if locals().get(i) is not None:

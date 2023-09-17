@@ -1,10 +1,12 @@
 class Payload:
-    name: str
+    name_32: str
+    name_64: str
     options: list[str]
 
 
-class REVERSE_TCP_64(Payload):
-    name = 'windows/x64/meterpreter/reverse_tcp'
+class REVERSE_TCP(Payload):
+    name_64 = 'windows/x64/meterpreter/reverse_tcp'
+    name_32 = 'windows/meterpreter/reverse_tcp'
     options = ['LHOST', 'LPORT', 'ReverseAllowProxy', 'ReverseListenerThreaded', 'PingbackRetries',
                'PingbackSleep', 'PayloadUUIDTracking', 'PrependMigrate', 'EXITFUNC',
                'AutoLoadStdapi', 'AutoSystemInfo', 'EnableUnicodeEncoding', 'AutoUnhookProcess']

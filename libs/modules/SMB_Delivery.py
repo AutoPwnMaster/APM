@@ -67,7 +67,7 @@ class SMB_Delivery(Basic):
         :param ReverseListenerThreaded:
         """
 
-        super().__init__(rpc, 'windows/smb/smb_delivery', payload.name)
+        super().__init__(rpc, 'windows/smb/smb_delivery', payload.name_64)
 
         for i in self.__module_options:
             if locals().get(i) is not None:
