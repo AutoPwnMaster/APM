@@ -72,7 +72,7 @@ class GUI(EventListener):
 
         self.print(text + '\n')
 
-    async def build(self):
+    def build(self):
         """
         建構 GUI
         """
@@ -109,7 +109,7 @@ class GUI(EventListener):
 
             match event:
                 case '-INPUT-_Enter':
-                    await self.__enter_event(values['-INPUT-'].strip())
+                    self.__enter_event(values['-INPUT-'].strip())
 
                 case '-INPUT-_Up':
                     self.__up_event(values['-INPUT-'].strip())
@@ -130,7 +130,7 @@ class GUI(EventListener):
     ##################
     #  Private Func  #
     ##################
-    async def __enter_event(self, input):
+    def __enter_event(self, input):
         # 若訊息為空, 則不理會事件
         if input == '':
             return
@@ -140,7 +140,7 @@ class GUI(EventListener):
         self.__current_pos = 0
 
         # 呼叫輸入事件，可使用裝飾器接收
-        await self.trigger('on_input_line', self, input)
+        self.trigger('on_input_line', self, input)
 
         # 清空輸入框
         self.__window['-INPUT-'].update('')

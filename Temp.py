@@ -2,6 +2,9 @@ from pymetasploit3.msfrpc import MsfRpcClient
 
 if __name__ == '__main__':
     client = MsfRpcClient("salt", port=55553, ssl=True)
+    print(client.sessions.list)
+    # for i in client.sessions.list.keys():
+    #     client.sessions.session(i).stop()
     module = client.modules.use('exploit', 'windows/smb/smb_delivery')
 
     options: list[str] = module.options
@@ -16,5 +19,5 @@ if __name__ == '__main__':
             output.append(i)
         else:
             print(i)
-    print(output)
-    print("=None, ".join(output) + '=None')
+    # print(output)
+    # print("=None, ".join(output) + '=None')

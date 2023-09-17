@@ -1,6 +1,8 @@
 import asyncio
+import threading
+import time
 
-from pymetasploit3.msfrpc import PayloadModule, ExploitModule, MsfRpcClient, MeterpreterSession, ShellSession
+from pymetasploit3.msfrpc import PayloadModule, ExploitModule, MsfRpcClient, MeterpreterSession
 
 from libs.EventListener import EventListener
 from libs.Logger import Logger
@@ -17,15 +19,16 @@ class Basic(EventListener):
 
     # Session Setting
     __session_id: '-1'
-    __session: MeterpreterSession | ShellSession = None
+    __session: MeterpreterSession = None
     __status: bool = False
-    __loop: asyncio.events = asyncio.new_event_loop()
+    __read_thread: threading
 
     def __init__(self, rpc: MsfRpcClient, module_name: str, payload_name: str):
         self.__rpc = rpc
         self.__module = rpc.modules.use('exploit', module_name)
         self._logger = Logger(module_name[module_name.rfind('/') + 1:])
         self.__payload = rpc.modules.use('payload', payload_name)
+        self.__read_thread = threading.Thread(target=self.__read)
 
     def set_module_option(self, key, value):
         """
@@ -47,6 +50,7 @@ class Basic(EventListener):
 
         self.__payload[key] = value
 
+    # Must be async
     async def _run(self) -> str:
         """
         開始攻擊
@@ -61,6 +65,7 @@ class Basic(EventListener):
         # response = self.__rpc.consoles \
         #     .console(self.__rpc.consoles.console().cid) \
         #     .run_module_with_output(self.__module, PayloadModule(self.__rpc, self.__payload))
+
         loop = asyncio.get_event_loop()
         response = await loop.run_in_executor(
             None,
@@ -78,33 +83,24 @@ class Basic(EventListener):
         :return:
         """
         self.__session_id = session_id
-        print(self.__rpc.sessions.list)
+
         if session_id != '-1':
             self.__session = self.__rpc.sessions.session(session_id)
+            """
+            可使用 @self.event 裝飾器，並搭配 def on_read(): 函數做使用，實做出事件監聽器效果
+            """
 
-    def start_read(self):
-        """
-        將異步執行 :meth:`__read_thread` 函數。
-        可使用 @self.event 裝飾器，並搭配 async def on_read(): 函數做使用，實做出事件監聽器效果
-        """
+            if self.__session_id == '-1':
+                self._logger.warn('cannot start read, cause session is empty!')
+                return
 
-        if self.__session_id == '-1':
-            self._logger.warn('cannot start read, cause session is empty!')
-            return
-
-        self._logger.info(f'開始監聽 session: {self.__session_id}')
-
-        print(type(self.__session))  # TODO: check type and fix it
-
-        self.__status = True
-        asyncio.set_event_loop(self.__loop)
-        self.__loop.create_task(self.__read_coroutine())
+            self.__status = True
+            self.__read_thread.start()
 
     def stop(self):
         self._logger.info('正在關閉...')
         self.__status = False
-        self.__loop.stop()
-        self.__loop.close()
+        self.__read_thread.join()
         if self.__session is not None:
             self.__session.stop()
         self._logger.succ('關閉完成')
@@ -112,17 +108,19 @@ class Basic(EventListener):
     ##################
     #  Private Func  #
     ##################
-    async def __read_coroutine(self):
+    def __read(self):
         """
         週期性協程
         """
+
+        self._logger.info(f'開始監聽 session: {self.__session_id}')
+        self.trigger('on_session_created', self.__session_id)
         while self.__status:
-            # 使用 asyncio 版本的 sleep
-            await asyncio.sleep(0.1)
+            time.sleep(0.1)
 
             try:
                 tmp = self.__session.read()
                 if tmp != '':
-                    await self.trigger('on_read', tmp)
+                    self.trigger('on_read', tmp)
             except KeyError:
                 pass

@@ -77,9 +77,10 @@ class SMB_Delivery(Basic):
             if locals().get(i) is not None:
                 self.set_payload_option(i, locals().get(i))
 
+    # Must be async
     async def run(self):
         response = await super()._run()
-        await self.trigger('on_read', response)
+        self.trigger('on_read', response)
 
     def check_session(self, str):
         # TODO: 檢查連是否成功

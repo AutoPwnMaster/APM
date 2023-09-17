@@ -41,9 +41,9 @@ class Event:
             self.__listeners.remove(func)
 
     # 觸發觸發器
-    async def trigger(self, *args, **kwargs):
+    def trigger(self, *args, **kwargs):
         for listener in self.__listeners:
-            await listener(*args, **kwargs)
+            listener(*args, **kwargs)
 
 
 class EventListener:
@@ -65,7 +65,7 @@ class EventListener:
 
         return func
 
-    async def trigger(self, event_name, *args, **kwargs):
+    def trigger(self, event_name, *args, **kwargs):
         """
         觸發事件監聽器。
 
@@ -75,4 +75,4 @@ class EventListener:
         """
 
         if event_name in self.__events:
-            await self.__events[event_name].trigger(*args, **kwargs)
+            self.__events[event_name].trigger(*args, **kwargs)

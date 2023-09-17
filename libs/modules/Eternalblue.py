@@ -63,8 +63,9 @@ class Eternalblue(Basic):
             if locals().get(i) is not None:
                 self.set_payload_option(i, locals().get(i))
 
+    # Must be async
     async def run(self):
         response = await super()._run()
         match = re.search(r'Session (\d+) created', response.split('\n')[-2])
         self.set_session(match.group(1) if match else '-1')
-        await self.trigger('on_read', response)
+        self.trigger('on_read', response)
