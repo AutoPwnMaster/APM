@@ -100,7 +100,8 @@ class Basic(EventListener):
     def stop(self):
         self._logger.info('正在關閉...')
         self.__status = False
-        self.__read_thread.join()
+        if self.__read_thread.is_alive():
+            self.__read_thread.join()
         if self.__session is not None:
             self.__session.stop()
         self._logger.succ('關閉完成')

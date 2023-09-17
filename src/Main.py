@@ -85,7 +85,7 @@ async def attack():
     )
 
 
-async def main():
+if __name__ == "__main__":
     # 建立客戶端
     connect_rpc()
 
@@ -102,7 +102,3 @@ async def main():
         client.logout()
 
     logger.succ('關閉完成')
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
