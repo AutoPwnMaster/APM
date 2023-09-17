@@ -1,4 +1,4 @@
-class Modules(str):
+class Module(str):
     # excellent
     SMB_DELIVERY = 'windows/smb/smb_delivery'
     MS10_061_SPOOLSS = 'windows/smb/ms10_061_spoolss'
