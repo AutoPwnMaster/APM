@@ -88,6 +88,7 @@ async def main():
     logger.info('正在關閉...')
     for func in stop_funcs:
         func()
+    attack_thread.join()
     client.logout()
 
     logger.succ('關閉完成')
