@@ -1,17 +1,15 @@
-import re  # re libary
+import re
 from socket import socket, AF_INET, SOCK_DGRAM
 from subprocess import check_output  # 呼叫 Bash 庫
 
 
-def get_ipv4():
-    sock = socket(AF_INET, SOCK_DGRAM)
-    sock.connect(("8.8.8.8", 80))
-    ip = sock.getsockname()[0]
-    sock.close()
-    return ip
+def get_local_IPv4():
+    with socket(AF_INET, SOCK_DGRAM) as sock:
+        sock.connect(("8.8.8.8", 80))
+        return sock.getsockname()[0]
 
 
-def __Get_NetBios(Target_ip: str) -> str:
+def __Get_NetBios(Target_ip: str) -> str | None:
     try:
         output = check_output(f"nmblookup -A {Target_ip}", shell=True, text=True)  # try nmblookup
         output = output.split('\n')[1][1:]
@@ -19,7 +17,7 @@ def __Get_NetBios(Target_ip: str) -> str:
         # Second one is target , first of it is "\t",  so use [1:]
 
         index = output.rfind("<00>")  # find last <00> index
-        return output[:index].strip()  # delet space
+        return output[:index].strip()  # delete space
     except:
         return None
 
@@ -52,8 +50,7 @@ def __Get_Printer(NetBios: str, Target_ip: str) -> list:
 
 def Get_Printer(Target_ip):
     NetBios = __Get_NetBios(Target_ip)
-    if not NetBios == None:
-        return __Get_Printer(NetBios, Target_ip)
-    else:
+    if NetBios is None:
         return None
 
+    return __Get_Printer(NetBios, Target_ip)
