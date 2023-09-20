@@ -14,9 +14,9 @@
 
 ## Description
 
-0. 執行 `msfrpcd -P salt` 建立位於連接埠 **55553** 的服務
-0. 再編輯 `src/Main.py` 內的攻擊方法與參數，如 IPv4，連接埠等
-0. 最後執行 `src/Main.py` 開始攻擊
+1. 執行 `msfrpcd -P salt` 建立位於連接埠 **55553** 的服務
+1. 再編輯 `src/Main.py` 內的攻擊方法與參數，如 IPv4，連接埠等
+1. 最後執行 `src/Main.py` 開始攻擊
 
 ---
 
